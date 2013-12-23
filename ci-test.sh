@@ -1,3 +1,3 @@
 #!/bin/sh
 
-./sbt -Dsbt.log.noformat=true clean test
+./sbt -Dsbt.log.noformat=true clean test:compile test
