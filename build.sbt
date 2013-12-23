@@ -8,32 +8,44 @@ lazy val basicAuth = project.settings(
   libraryDependencies += javaCore
 )
 
+lazy val mail = project.settings(
+  version := "1.0-SNAPSHOT",
+  name := "play-2-mail",
+  libraryDependencies += "org.apache.commons" % "commons-email" % "1.3.2",
+  libraryDependencies += "com.icegreen" % "greenmail" % "1.3" % "test"
+)
+
 organization := "info.schleichardt"
 
-javacOptions ++= Seq("-source", "1.6", "-target", "1.6")//for compatibility with Debian Squeeze
+javacOptions ++= Seq("-source", "1.6", "-target", "1.6") //for compatibility with Debian Squeeze
 
 publishMavenStyle := true
 
 publishArtifact in Test := false
 
-publishTo <<= version { (v: String) =>
-  val nexus = "https://oss.sonatype.org/"
-  if (v.trim.endsWith("SNAPSHOT"))
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases" at nexus + "service/local/staging/deploy/maven2")
+publishTo <<= version {
+  (v: String) =>
+    val nexus = "https://oss.sonatype.org/"
+    if (v.trim.endsWith("SNAPSHOT"))
+      Some("snapshots" at nexus + "content/repositories/snapshots")
+    else
+      Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
 
 libraryDependencies in ThisBuild += "com.typesafe.play" %% "play" % play.core.PlayVersion.current
 
 libraryDependencies in ThisBuild += "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % "test"
 
-pomIncludeRepository := { _ => false }
+pomIncludeRepository := {
+  _ => false
+}
 
 val githubPath = "schleichardt/play-modules"
 
 pomExtra := (
-  <url>https://github.com/{githubPath}</url>
+  <url>https://github.com/
+    {githubPath}
+  </url>
     <licenses>
       <license>
         <name>Apache 2</name>
@@ -42,8 +54,12 @@ pomExtra := (
       </license>
     </licenses>
     <scm>
-      <url>git@github.com:{githubPath}.git</url>
-      <connection>scm:git:git@github.com:{githubPath}.git</connection>
+      <url>git@github.com:
+        {githubPath}
+        .git</url>
+      <connection>scm:git:git@github.com:
+        {githubPath}
+        .git</connection>
     </scm>
     <developers>
       <developer>
