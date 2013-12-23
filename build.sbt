@@ -17,7 +17,7 @@ lazy val mail = project.settings(
 
 organization := "info.schleichardt"
 
-javacOptions ++= Seq("-source", "1.6", "-target", "1.6") //for compatibility with Debian Squeeze
+javacOptions in ThisBuild ++= Seq("-source", "1.6", "-target", "1.6") //for compatibility with Debian Squeeze
 
 publishMavenStyle := true
 
