@@ -5,6 +5,7 @@ import play.mvc.Http.{RequestHeader => JRequestHeader}
 import play.api.mvc.Action
 import play.api.mvc.Handler
 import play.api.mvc.Results._
+import play.api.mvc
 
 case class Credentials(@BeanProperty username: String, @BeanProperty password: String) {
   private[basicauth] def matches(otherUsername: String, otherPassword: String) = username == otherUsername && password == otherPassword
@@ -39,15 +40,26 @@ object PlainCredentialsFromConfigAuthenticator {
 }
 
 class BasicAuth(authenticator: Authenticator) {
+  def authenticate(request: mvc.RequestHeader, handler: => Handler): Option[Handler] = {
+    val isAuthenticated = request.headers.get("Authorization").flatMap(extractAuthDataFromHeader).map(authenticator.authenticate(_)).getOrElse(false)
+    if (isAuthenticated) {
+      Option(handler)
+    } else {
+      Option(unauthorizedAction)
+    }
+  }
+
   def authenticate(request: JRequestHeader, handler: Handler): Handler = {
     val isAuthenticated = Option(request.getHeader("Authorization")).flatMap(extractAuthDataFromHeader).map(authenticator.authenticate(_)).getOrElse(false)
     if (isAuthenticated) {
       handler
     } else {
-      Action {
-        Unauthorized.withHeaders("WWW-Authenticate" -> """Basic realm="%s"""".format("Authentication needed"))
-      }
+      unauthorizedAction
     }
+  }
+
+  def unauthorizedAction = Action {
+    Unauthorized.withHeaders("WWW-Authenticate" -> """Basic realm="%s"""".format("Authentication needed"))
   }
 
   private def extractAuthDataFromHeader(header: String): Option[Credentials] = {
