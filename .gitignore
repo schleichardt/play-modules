@@ -1,5 +1,8 @@
+.*
+!/.gitignore
 *.class
 *.log
+*.iml
 
 # sbt specific
 dist/*
