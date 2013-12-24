@@ -14,6 +14,14 @@ lazy val featureToggle = project.settings(
   libraryDependencies += javaCore
 )
 
+lazy val embedMongo = project.settings(
+  version := "0.4-SNAPSHOT",
+  name := "play-2-embed-mongo",
+  libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "1.41",
+  libraryDependencies += "org.mongodb" % "mongo-java-driver" % "2.11.3" % "test",
+  parallelExecution in Test := false
+)
+
 lazy val mail = project.settings(
   version := "1.0-SNAPSHOT",
   name := "play-2-mail",
