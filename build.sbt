@@ -8,6 +8,12 @@ lazy val basicAuth = project.settings(
   libraryDependencies += javaCore
 )
 
+lazy val featureToggle = project.settings(
+  version := "0.1-SNAPSHOT",
+  name := "play-2-feature-toggle",
+  libraryDependencies += javaCore
+)
+
 lazy val mail = project.settings(
   version := "1.0-SNAPSHOT",
   name := "play-2-mail",
