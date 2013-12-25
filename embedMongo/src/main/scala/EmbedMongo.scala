@@ -1,13 +1,13 @@
 package info.schleichardt.play2.embed.mongo
 
-import play.api.{Mode, Configuration, GlobalSettings}
+import play.api.{ Mode, Configuration, GlobalSettings }
 import java.io.File
 
-import play.api.{Logger, Plugin, Application}
-import java.util.logging.{Logger => JLogger}
-import de.flapdoodle.embed.mongo.{Command, MongodStarter, MongodProcess, MongodExecutable}
+import play.api.{ Logger, Plugin, Application }
+import java.util.logging.{ Logger => JLogger }
+import de.flapdoodle.embed.mongo.{ Command, MongodStarter, MongodProcess, MongodExecutable }
 import de.flapdoodle.embed.process.distribution.GenericVersion
-import de.flapdoodle.embed.mongo.config.{Net, MongodConfigBuilder, RuntimeConfigBuilder}
+import de.flapdoodle.embed.mongo.config.{ Net, MongodConfigBuilder, RuntimeConfigBuilder }
 import de.flapdoodle.embed.process.runtime.Network
 import java.io.IOException
 import de.flapdoodle.embed.mongo.distribution.Versions

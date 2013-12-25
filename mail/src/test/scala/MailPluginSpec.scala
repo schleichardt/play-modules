@@ -1,6 +1,6 @@
 import com.icegreen.greenmail.util.GreenMail
 import javax.mail.internet.MimeMessage
-import org.apache.commons.mail.{EmailException, Email, SimpleEmail}
+import org.apache.commons.mail.{ EmailException, Email, SimpleEmail }
 import org.specs2.mutable._
 import info.schleichardt.play2.mailplugin._
 

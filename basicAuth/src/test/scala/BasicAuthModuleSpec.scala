@@ -1,14 +1,14 @@
 import com.ning.http.client.Realm.AuthScheme
-import info.schleichardt.play2.basicauth.{BasicAuth, Credentials}
-import play.api.libs.ws.{Response, WS}
-import play.api.{GlobalSettings, mvc}
-import play.api.test.{WithServer, WithApplication, PlaySpecification, FakeApplication}
-import play.{GlobalSettings => JGlobalSettings}
+import info.schleichardt.play2.basicauth.{ BasicAuth, Credentials }
+import play.api.libs.ws.{ Response, WS }
+import play.api.{ GlobalSettings, mvc }
+import play.api.test.{ WithServer, WithApplication, PlaySpecification, FakeApplication }
+import play.{ GlobalSettings => JGlobalSettings }
 import play.mvc.Http.RequestHeader
-import play.test.{FakeApplication => JFakeApplication, WithServer => JWithServer, Helpers}
-import java.util.{Map => JMap, List => JList}
+import play.test.{ FakeApplication => JFakeApplication, WithServer => JWithServer, Helpers }
+import java.util.{ Map => JMap, List => JList }
 import com.google.common.collect.Lists._
-import play.api.mvc.{Handler, Results, Action}
+import play.api.mvc.{ Handler, Results, Action }
 import scala.collection.JavaConversions._
 import info.schleichardt.play2.basicauth.PlainCredentialsFromConfigAuthenticator
 import scala.concurrent.Await
@@ -38,31 +38,32 @@ object BasicAuthModuleSpec extends PlaySpecification {
   }
 
   def scalaFakeApplication: FakeApplication = {
-    val additionalConfiguration: Map[String,Any] = Map(KeyUsername -> credentials.username, KeyPassword -> credentials.password)
-        val global = new GlobalSettings() {
+    val additionalConfiguration: Map[String, Any] = Map(KeyUsername -> credentials.username, KeyPassword -> credentials.password)
+    val global = new GlobalSettings() {
 
-          val basicAuth = new BasicAuth(new PlainCredentialsFromConfigAuthenticator)
+      val basicAuth = new BasicAuth(new PlainCredentialsFromConfigAuthenticator)
 
-          override def onRouteRequest(request: mvc.RequestHeader): Option[Handler] = {
-            val handler = Action(Results.Ok(secretContent))//workaround since there are no routes present
-            basicAuth.authenticate(request, handler)
-          }
-        }
-        FakeApplication(additionalConfiguration = additionalConfiguration, withGlobal = Option(global))
+      override def onRouteRequest(request: mvc.RequestHeader): Option[Handler] = {
+        val handler = Action(Results.Ok(secretContent)) //workaround since there are no routes present
+        basicAuth.authenticate(request, handler)
+      }
+    }
+    FakeApplication(additionalConfiguration = additionalConfiguration, withGlobal = Option(global))
   }
 
-  Seq(("Java API" -> javaFakeApplication _), ("Scala API" -> scalaFakeApplication _)).foreach { case (name, func) =>
-    s"the $name must deny access without credentials" in new WithServer(func()) {
-      assertNoAccessGranted(flowWithoutCredentials(port))
-    }
+  Seq(("Java API" -> javaFakeApplication _), ("Scala API" -> scalaFakeApplication _)).foreach {
+    case (name, func) =>
+      s"the $name must deny access without credentials" in new WithServer(func()) {
+        assertNoAccessGranted(flowWithoutCredentials(port))
+      }
 
-    s"the $name must allow access with valid credentials" in new WithServer(func()) {
-      assertAccessGranted(flowWithValidCredentials(port))
-    }
+      s"the $name must allow access with valid credentials" in new WithServer(func()) {
+        assertAccessGranted(flowWithValidCredentials(port))
+      }
 
-    s"the $name must deny access with invalid credentials" in new WithServer(func()) {
-      assertNoAccessGranted(flowWithInvalidCredentials(port))
-    }
+      s"the $name must deny access with invalid credentials" in new WithServer(func()) {
+        assertNoAccessGranted(flowWithInvalidCredentials(port))
+      }
   }
 
   def assertAccessGranted(response: Response) = {
@@ -73,7 +74,7 @@ object BasicAuthModuleSpec extends PlaySpecification {
   def flowWithInvalidCredentials(port: Int): Response = {
     Await.result(WS.url(s"http://localhost:$port").withAuth(username, password + "x", AuthScheme.BASIC).get(), 2 seconds)
   }
-  
+
   def flowWithValidCredentials(port: Int): Response = {
     Await.result(WS.url(s"http://localhost:$port").withAuth(username, password, AuthScheme.BASIC).get(), 2 seconds)
   }

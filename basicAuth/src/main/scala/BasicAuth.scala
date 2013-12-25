@@ -1,7 +1,7 @@
 package info.schleichardt.play2.basicauth
 
 import scala.beans.BeanProperty
-import play.mvc.Http.{RequestHeader => JRequestHeader}
+import play.mvc.Http.{ RequestHeader => JRequestHeader }
 import play.api.mvc.Action
 import play.api.mvc.Handler
 import play.api.mvc.Results._

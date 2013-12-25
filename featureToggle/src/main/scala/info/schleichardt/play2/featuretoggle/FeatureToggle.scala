@@ -1,8 +1,8 @@
 package info.schleichardt.play2.featuretoggle
 
-import play.api.{Play, Application, Plugin}
-import play.mvc.{Action => JAction, Results => JResults, SimpleResult, Http}
-import play.libs.F.{Promise => JPromise}
+import play.api.{ Play, Application, Plugin }
+import play.mvc.{ Action => JAction, Results => JResults, SimpleResult, Http }
+import play.libs.F.{ Promise => JPromise }
 
 class FeatureTogglePlugin(app: Application) extends Plugin {
   override def enabled = app.configuration.getBoolean("info.schleichardt.play2.featuretoggle.enabled").getOrElse(true)

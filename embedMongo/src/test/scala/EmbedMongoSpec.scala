@@ -2,7 +2,7 @@ package info.schleichardt.play2.embed.mongo
 
 import org.specs2.mutable._
 import EmbedMongoPlugin.ConfigKeys._
-import com.mongodb.{BasicDBObject, MongoClient}
+import com.mongodb.{ BasicDBObject, MongoClient }
 import play.api.Play
 import play.api.test.FakeApplication
 import play.api.test.WithApplication
@@ -26,7 +26,6 @@ class ModuleSpec extends Specification {
   }
 }
 
-
 object MongoUtils {
   def mongoPort = {
     val port = Play.current.configuration.getInt(KeyPort).get
@@ -39,8 +38,7 @@ object MongoUtils {
   def collection(db: String)(collection: String) = newMongoClient.getDB(db).getCollection(collection)
 }
 
-abstract class WithMongoApp(config: Pair[String, Any]*) extends
-WithApplication(
+abstract class WithMongoApp(config: Pair[String, Any]*) extends WithApplication(
   FakeApplication(
     additionalConfiguration = (Map(KeyEnabled -> "true", KeyPort -> EmbedMongoPlugin.freePort) ++ config.toMap),
     additionalPlugins = Seq("info.schleichardt.play2.embed.mongo.EmbedMongoPlugin")

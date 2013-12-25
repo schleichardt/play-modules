@@ -1,17 +1,16 @@
 package info.schleichardt.play2.mailplugin
 
-import play.api.{Plugin, Application}
-import org.apache.commons.mail.{MultiPartEmail, Email}
+import play.api.{ Plugin, Application }
+import org.apache.commons.mail.{ MultiPartEmail, Email }
 import play.Logger
 import javax.mail.internet.MimeMultipart
-import javax.mail.{Part, Multipart}
+import javax.mail.{ Part, Multipart }
 
 import org.apache.commons.lang3.StringUtils.isEmpty
 import java.io.ByteArrayInputStream
 
 import scala.collection.JavaConversions._
 import collection.mutable.SynchronizedQueue
-
 
 class MailPlugin(app: Application) extends Plugin {
   protected[mailplugin] var mailArchive = new SynchronizedQueue[Email]()
@@ -22,7 +21,6 @@ class MailPlugin(app: Application) extends Plugin {
   }
   MailPlugin.instance = this
   var interceptor: EmailSendInterceptor = new DefaultEmailSendInterceptor
-
 
   def configuration(profile: String = "") = if (!useMockMail) {
     val usesProfile: Boolean = profile != null && !profile.trim.isEmpty

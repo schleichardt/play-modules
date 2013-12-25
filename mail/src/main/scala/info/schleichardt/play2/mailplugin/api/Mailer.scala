@@ -1,7 +1,7 @@
 package info.schleichardt.play2.mailplugin.api
 
 import org.apache.commons.mail.Email
-import info.schleichardt.play2.mailplugin.{EmailSendInterceptor, MailPlugin}
+import info.schleichardt.play2.mailplugin.{ EmailSendInterceptor, MailPlugin }
 import scala.collection.JavaConversions._
 
 object Mailer {

@@ -1,4 +1,5 @@
 import play.Project._
+import com.typesafe.sbt.SbtScalariform._
 
 resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
 
@@ -6,13 +7,13 @@ lazy val basicAuth = project.settings(
   version := "0.3-SNAPSHOT",
   name := "play-2-basic-auth",
   libraryDependencies += javaCore
-)
+).settings(commonSettings:_*)
 
 lazy val featureToggle = project.settings(
   version := "0.1-SNAPSHOT",
   name := "play-2-feature-toggle",
   libraryDependencies += javaCore
-)
+).settings(commonSettings:_*)
 
 lazy val embedMongo = project.settings(
   version := "0.4-SNAPSHOT",
@@ -20,14 +21,14 @@ lazy val embedMongo = project.settings(
   libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "1.41",
   libraryDependencies += "org.mongodb" % "mongo-java-driver" % "2.11.3" % "test",
   parallelExecution in Test := false
-)
+).settings(commonSettings:_*)
 
 lazy val mail = project.settings(
   version := "1.0-SNAPSHOT",
   name := "play-2-mail",
   libraryDependencies += "org.apache.commons" % "commons-email" % "1.3.2",
   libraryDependencies += "com.icegreen" % "greenmail" % "1.3" % "test"
-)
+).settings(commonSettings:_*)
 
 organization in ThisBuild := "info.schleichardt"
 
@@ -76,3 +77,5 @@ pomExtra in ThisBuild := (
       </developer>
     </developers>
   )
+
+val commonSettings = scalariformSettings

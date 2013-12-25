@@ -4,11 +4,11 @@ import DemoEmailProvider._
 
 package info.schleichardt.play2.mailplugin {
 
-import org.apache.commons.mail.Email
+  import org.apache.commons.mail.Email
 
-object MailPluginTestEnhancement {
-  def emailToString(email: Email): String = MailPlugin.getEmailDebugOutput(email)
-}
+  object MailPluginTestEnhancement {
+    def emailToString(email: Email): String = MailPlugin.getEmailDebugOutput(email)
+  }
 
 }
 

@@ -1,13 +1,13 @@
 import info.schleichardt.play2.featuretoggle.ImplementedFeature
 import play.api.mvc.Handler
-import play.api.test.{FakeRequest, WithApplication, FakeApplication, PlaySpecification}
-import play.core.j.{JavaActionAnnotations, JavaAction}
+import play.api.test.{ FakeRequest, WithApplication, FakeApplication, PlaySpecification }
+import play.core.j.{ JavaActionAnnotations, JavaAction }
 import play.libs.F
-import play.{GlobalSettings => JGlobalSettings}
+import play.{ GlobalSettings => JGlobalSettings }
 import play.mvc.Http.RequestHeader
-import play.mvc.{Result => JResult, Results => JResults}
-import play.test.{FakeApplication => JFakeApplication, WithServer => JWithServer, Helpers}
-import java.util.{Map => JMap, List => JList}
+import play.mvc.{ Result => JResult, Results => JResults }
+import play.test.{ FakeApplication => JFakeApplication, WithServer => JWithServer, Helpers }
+import java.util.{ Map => JMap, List => JList }
 import scala.collection.JavaConversions._
 
 class OrderCartFeature
