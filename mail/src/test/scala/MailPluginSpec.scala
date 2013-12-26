@@ -1,4 +1,5 @@
 import com.icegreen.greenmail.util.GreenMail
+import java.net.Socket
 import javax.mail.internet.MimeMessage
 import org.apache.commons.mail.{ EmailException, Email, SimpleEmail }
 import org.specs2.mutable._
@@ -9,7 +10,9 @@ import play.api.test.Helpers._
 
 import DemoEmailProvider.newFilledSimpleEmail
 
+import scala.annotation.tailrec
 import scala.collection.JavaConversions._
+import scala.util.Try
 
 class MailPluginSpec extends Specification {
   "MailPlugin" should {
@@ -124,12 +127,31 @@ class MailPluginSpec extends Specification {
       Map("smtp.mock" -> "false", portKey -> smtpTestPort().toString, sslKey -> "false")
     }
 
+    def withGreenmail[T](greenMail: GreenMail = newSmtpGreenMail)(block: GreenMail => T): T = {
+      @tailrec def waitUntilServerIsUp(remainingAttempts: Int) {
+        require(remainingAttempts > 0, "greenmail server must be started")
+        val port = greenMail.getSmtp.getPort
+        if (Try(Option(new Socket("localhost", port)).map(_.close())).isFailure) {
+          Thread.sleep(100)
+          waitUntilServerIsUp(remainingAttempts - 1)
+        }
+      }
+
+      try {
+        greenMail.start() //this is non blocking
+        waitUntilServerIsUp(10)
+        block(greenMail)
+      } finally {
+        greenMail.stop()
+      }
+    }
+
+    def newSmtpGreenMail = new GreenMail(com.icegreen.greenmail.util.ServerSetupTest.SMTP)
+
     "be able to send real mails" in {
       val app: FakeApplication = EmailFakeApplication(additionalConfiguration = smtpConfigForGreenMail())
       running(app) {
-        var greenMail = new GreenMail(com.icegreen.greenmail.util.ServerSetupTest.SMTP)
-        try {
-          greenMail.start()
+        withGreenmail() { greenMail =>
           val email: SimpleEmail = newFilledSimpleEmail()
           val subject = "the subject"
           email.setSubject(subject)
@@ -137,10 +159,6 @@ class MailPluginSpec extends Specification {
           val receivedMessages: Array[MimeMessage] = greenMail.getReceivedMessages
           receivedMessages.size === 1
           receivedMessages(0).getSubject === subject
-        } finally {
-          if (greenMail != null) {
-            greenMail.stop()
-          }
         }
       }
     }
@@ -148,9 +166,7 @@ class MailPluginSpec extends Specification {
     "be able to send real mails with alternate profile" in {
       val app: FakeApplication = EmailFakeApplication(additionalConfiguration = smtpConfigForGreenMail("demoprofile"))
       running(app) {
-        var greenMail = new GreenMail(com.icegreen.greenmail.util.ServerSetupTest.SMTP)
-        try {
-          greenMail.start()
+        withGreenmail() { greenMail =>
           val email: SimpleEmail = newFilledSimpleEmail()
           val subject = "the subject alternate profile"
           email.setSubject(subject)
@@ -158,10 +174,6 @@ class MailPluginSpec extends Specification {
           val receivedMessages: Array[MimeMessage] = greenMail.getReceivedMessages
           receivedMessages.size === 1
           receivedMessages(0).getSubject === subject
-        } finally {
-          if (greenMail != null) {
-            greenMail.stop()
-          }
         }
       }
     }
