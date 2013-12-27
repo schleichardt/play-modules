@@ -45,7 +45,7 @@ object BasicAuthModuleSpec extends PlaySpecification {
 
       override def onRouteRequest(request: mvc.RequestHeader): Option[Handler] = {
         //workaround since there are no routes present
-        basicAuth.authenticate(request, () => Action(Results.Ok(secretContent)))
+        basicAuth.authenticate(request, Option(Action(Results.Ok(secretContent))))
       }
     }
     FakeApplication(additionalConfiguration = additionalConfiguration, withGlobal = Option(global))

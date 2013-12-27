@@ -2,10 +2,10 @@ package info.schleichardt.play2.basicauth
 
 import scala.beans.BeanProperty
 import play.mvc.Http.{ RequestHeader => JRequestHeader }
-import play.api.mvc.Action
-import play.api.mvc.Handler
+import play.api.mvc.{ Handler, Action }
 import play.api.mvc.Results._
 import play.api.mvc
+import scala.Option
 
 case class Credentials(@BeanProperty username: String, @BeanProperty password: String) {
   private[basicauth] def matches(otherUsername: String, otherPassword: String) = username == otherUsername && password == otherPassword
@@ -40,10 +40,10 @@ object PlainCredentialsFromConfigAuthenticator {
 }
 
 class BasicAuth(authenticator: Authenticator) {
-  def authenticate(request: mvc.RequestHeader, handler: () => Handler): Option[Handler] = {
+  def authenticate(request: mvc.RequestHeader, handler: Option[Handler]): Option[Handler] = {
     val isAuthenticated = request.headers.get("Authorization").flatMap(extractAuthDataFromHeader).map(authenticator.authenticate(_)).getOrElse(false)
     if (isAuthenticated) {
-      Option(handler())
+      handler
     } else {
       Option(unauthorizedAction)
     }
