@@ -8,7 +8,7 @@ lazy val root = Project(id = "play-modules", base = file(".")).
   aggregate(basicAuth, featureToggle, embedMongo, mail)
 
 lazy val basicAuth = project.settings(
-  version := "0.3-SNAPSHOT",
+  version := "0.3.1-SNAPSHOT",
   name := "play-2-basic-auth",
   libraryDependencies += javaCore
 ).settings(commonSettings:_*)
