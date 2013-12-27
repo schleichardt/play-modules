@@ -40,10 +40,10 @@ object PlainCredentialsFromConfigAuthenticator {
 }
 
 class BasicAuth(authenticator: Authenticator) {
-  def authenticate(request: mvc.RequestHeader, handler: => Handler): Option[Handler] = {
+  def authenticate(request: mvc.RequestHeader, handler: () => Handler): Option[Handler] = {
     val isAuthenticated = request.headers.get("Authorization").flatMap(extractAuthDataFromHeader).map(authenticator.authenticate(_)).getOrElse(false)
     if (isAuthenticated) {
-      Option(handler)
+      Option(handler())
     } else {
       Option(unauthorizedAction)
     }
