@@ -1,8 +1,7 @@
-import com.ning.http.client.Realm.AuthScheme
 import info.schleichardt.play2.basicauth.{ BasicAuth, Credentials }
 import play.api.libs.ws.{ Response, WS }
 import play.api.{ GlobalSettings, mvc }
-import play.api.test.{ WithServer, WithApplication, PlaySpecification, FakeApplication }
+import play.api.test.{ WithServer, PlaySpecification, FakeApplication }
 import play.{ GlobalSettings => JGlobalSettings }
 import play.mvc.Http.RequestHeader
 import play.test.{ FakeApplication => JFakeApplication, WithServer => JWithServer, Helpers }
@@ -11,14 +10,15 @@ import com.google.common.collect.Lists._
 import play.api.mvc.{ Handler, Results, Action }
 import scala.collection.JavaConversions._
 import info.schleichardt.play2.basicauth.PlainCredentialsFromConfigAuthenticator
-import scala.concurrent.Await
-import scala.concurrent.duration._
+import com.ning.http.client.Realm.AuthScheme.BASIC
 
 object BasicAuthModuleSpec extends PlaySpecification {
   val credentials = Credentials("michael", "secret")
+
   import credentials._
   import PlainCredentialsFromConfigAuthenticator.KeyPassword
   import PlainCredentialsFromConfigAuthenticator.KeyUsername
+
   val secretContent = "the secret content"
 
   def javaFakeApplication: FakeApplication = {
@@ -71,17 +71,13 @@ object BasicAuthModuleSpec extends PlaySpecification {
     response.body must contain(secretContent)
   }
 
-  def flowWithInvalidCredentials(port: Int): Response = {
-    Await.result(WS.url(s"http://localhost:$port").withAuth(username, password + "x", AuthScheme.BASIC).get(), 2 seconds)
-  }
+  def flowWithInvalidCredentials(port: Int): Response = get(WS.url(s"http://localhost:$port").withAuth(username, password + "x", BASIC))
 
-  def flowWithValidCredentials(port: Int): Response = {
-    Await.result(WS.url(s"http://localhost:$port").withAuth(username, password, AuthScheme.BASIC).get(), 2 seconds)
-  }
+  def flowWithValidCredentials(port: Int): Response = get(WS.url(s"http://localhost:$port").withAuth(username, password, BASIC))
 
-  def flowWithoutCredentials(port: Int): Response = {
-    Await.result(WS.url(s"http://localhost:$port").get(), 2 seconds)
-  }
+  def get(requestHolder: WS.WSRequestHolder): Response = await(requestHolder.get())
+
+  def flowWithoutCredentials(port: Int): Response = get(WS.url(s"http://localhost:$port"))
 
   def assertNoAccessGranted(response: Response) = {
     response.status === 401
