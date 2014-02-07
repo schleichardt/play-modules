@@ -28,8 +28,9 @@ class MailPlugin(app: Application) extends Plugin {
 
     //uses Typesafe syntax: Copyright 2012 Typesafe (http://www.typesafe.com), https://github.com/typesafehub/play-plugins/blob/master/mailer/src/main/scala/com/typesafe/plugin/MailerPlugin.scala
     val host = app.configuration.getString(prefix + "host").getOrElse(throw new RuntimeException(prefix + "host needs to be set in application.conf in order to use this plugin (or set smtp.mock to true)"))
-    val port = app.configuration.getInt(prefix + "port").getOrElse(25)
     val useSsl = app.configuration.getBoolean(prefix + "ssl").getOrElse(false)
+    val defaultSmtpPort = if (useSsl) 465 else 25
+    val port = app.configuration.getInt(prefix + "port").getOrElse(defaultSmtpPort)
     val user = app.configuration.getString(prefix + "user")
     val password = app.configuration.getString(prefix + "password")
     MailConfiguration(host, port, useSsl, user, password)
