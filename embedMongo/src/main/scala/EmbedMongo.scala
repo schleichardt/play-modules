@@ -13,6 +13,20 @@ import java.io.IOException
 import de.flapdoodle.embed.mongo.distribution.Versions
 import EmbedMongoPlugin.ConfigKeys._
 
+object MongoExeFactory {
+  def apply(port: Int, versionNumber: String) = {
+    val runtimeConfig = new RuntimeConfigBuilder()
+      .defaultsWithLogger(Command.MongoD, JLogger.getLogger(getClass().getName()))
+      .build()
+    val runtime = MongodStarter.getInstance(runtimeConfig)
+    val config = new MongodConfigBuilder()
+      .version(Versions.withFeatures(new GenericVersion(versionNumber)))
+      .net(new Net("localhost", port, Network.localhostIsIPv6())).build()
+    Logger("play-embed-mongo").info(s"Starting MongoDB on port $port. This might take a while the first time due to the download of MongoDB.")
+    runtime.prepare(config)
+  }
+}
+
 /**
  * Provides a MongoDB instance for development and testing.
  * Hast to be loaded before any other plugin that connects with MongoDB.
@@ -24,17 +38,9 @@ class EmbedMongoPlugin(app: Application) extends Plugin {
   override def enabled = app.configuration.getBoolean(KeyEnabled).getOrElse(false)
 
   override def onStart() {
-    val runtimeConfig = new RuntimeConfigBuilder()
-      .defaultsWithLogger(Command.MongoD, JLogger.getLogger(getClass().getName()))
-      .build()
-    val runtime = MongodStarter.getInstance(runtimeConfig)
+    val port = conf.getInt(KeyPort).getOrElse(throw new RuntimeException(s"$KeyPort is missing in your configuration"))
     val versionNumber = app.configuration.getString(KeyMongoDbVersion).getOrElse(throw new RuntimeException(s"$KeyMongoDbVersion is missing in your configuration"))
-    val port = app.configuration.getInt(KeyPort).getOrElse(throw new RuntimeException(s"$KeyPort is missing in your configuration"))
-    val config = new MongodConfigBuilder()
-      .version(Versions.withFeatures(new GenericVersion(versionNumber)))
-      .net(new Net("localhost", port, Network.localhostIsIPv6())).build()
-    Logger.info(s"Starting MongoDB on port $port. This might take a while the first time due to the download of MongoDB.")
-    mongoExe = runtime.prepare(config)
+    mongoExe = MongoExeFactory(port, versionNumber)
     try {
       process = mongoExe.start()
     } catch {
@@ -45,8 +51,10 @@ class EmbedMongoPlugin(app: Application) extends Plugin {
     }
   }
 
+  def conf: Configuration = app.configuration
+
   override def onStop() {
-    Logger.info(s"Stopping MongoDB.")
+    Logger("play-embed-mongo").info(s"Stopping MongoDB.")
     try {
       if (mongoExe != null)
         mongoExe.stop()
