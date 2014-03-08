@@ -12,11 +12,13 @@ import de.flapdoodle.embed.process.runtime.Network
 import java.io.IOException
 import de.flapdoodle.embed.mongo.distribution.Versions
 import EmbedMongoPlugin.ConfigKeys._
+import de.flapdoodle.embed.process.config.io.ProcessOutput
 
 object MongoExeFactory {
   def apply(port: Int, versionNumber: String) = {
     val runtimeConfig = new RuntimeConfigBuilder()
-      .defaultsWithLogger(Command.MongoD, JLogger.getLogger(getClass().getName()))
+      .defaultsWithLogger(Command.MongoD, JLogger.getLogger("embed.mongo"))
+      .processOutput(ProcessOutput.getDefaultInstanceSilent())
       .build()
     val runtime = MongodStarter.getInstance(runtimeConfig)
     val config = new MongodConfigBuilder()
