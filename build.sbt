@@ -1,5 +1,6 @@
 import play.Project._
 import com.typesafe.sbt.SbtScalariform._
+import sbtrelease.ReleasePlugin.ReleaseKeys._
 
 resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
 
@@ -8,19 +9,16 @@ lazy val root = Project(id = "play-modules", base = file(".")).
   aggregate(basicAuth, featureToggle, embedMongo, mail)
 
 lazy val basicAuth = project.settings(
-  version := "0.3.1-SNAPSHOT",
   name := "play-2-basic-auth",
   libraryDependencies += javaCore
 ).settings(commonSettings:_*)
 
 lazy val featureToggle = project.settings(
-  version := "0.1-SNAPSHOT",
   name := "play-2-feature-toggle",
   libraryDependencies += javaCore
 ).settings(commonSettings:_*)
 
 lazy val embedMongo = project.settings(
-  version := "0.5-SNAPSHOT",
   name := "play-2-embed-mongo",
   libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "1.41",
   libraryDependencies += "org.mongodb" % "mongo-java-driver" % "2.11.3" % "test",
@@ -29,7 +27,6 @@ lazy val embedMongo = project.settings(
 ).settings(commonSettings:_*)
 
 lazy val mail = project.settings(
-  version := "1.0-SNAPSHOT",
   name := "play-2-mail",
   libraryDependencies += "org.apache.commons" % "commons-email" % "1.3.2",
   libraryDependencies += "com.icegreen" % "greenmail" % "1.3" % "test"
@@ -83,4 +80,10 @@ pomExtra in ThisBuild := (
     </developers>
   )
 
-val commonSettings = scalariformSettings ++ ScctPlugin.instrumentSettings
+val commonSettings = scalariformSettings ++ ScctPlugin.instrumentSettings ++ releaseSettings ++ Seq(
+  versionFile := (baseDirectory).value / "version.sbt",
+  commitMessage := commitMessage.value + " of " + name.value,
+  tagName := name .value+ "-" + tagName.value
+)
+
+useGlobalVersion in ThisBuild := false
