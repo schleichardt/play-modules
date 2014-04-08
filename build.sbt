@@ -20,7 +20,7 @@ lazy val featureToggle = project.settings(
 
 lazy val embedMongo = project.settings(
   name := "play-2-embed-mongo",
-  libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "1.41",
+  libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "1.43",
   libraryDependencies += "org.mongodb" % "mongo-java-driver" % "2.11.3" % "test",
   parallelExecution in ScctPlugin.ScctTest := false,
   parallelExecution in Test := false
