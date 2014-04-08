@@ -1,6 +1,12 @@
 import play.Project._
 import com.typesafe.sbt.SbtScalariform._
 import sbtrelease.ReleasePlugin.ReleaseKeys._
+import sbtrelease._
+import ReleaseStateTransformations._
+import ReleasePlugin._
+import ReleaseKeys._
+import Utilities._
+import com.typesafe.sbt.SbtPgp.PgpKeys._
 
 resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
 
@@ -87,3 +93,23 @@ val commonSettings = scalariformSettings ++ ScctPlugin.instrumentSettings ++ rel
 )
 
 useGlobalVersion in ThisBuild := false
+
+//from https://github.com/sbt/sbt-release/issues/49
+lazy val publishSignedAction = { st: State =>
+  val extracted = st.extract
+  val ref = extracted.get(thisProjectRef)
+  extracted.runAggregated(publishSigned in Global in ref, st)
+}
+
+releaseProcess := Seq[ReleaseStep](
+  checkSnapshotDependencies,
+  inquireVersions,
+  runTest,
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  publishArtifacts.copy(action = publishSignedAction),
+  setNextVersion,
+  commitNextVersion,
+  pushChanges
+)
