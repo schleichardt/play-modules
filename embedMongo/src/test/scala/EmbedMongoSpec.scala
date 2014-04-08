@@ -4,8 +4,9 @@ import org.specs2.mutable._
 import EmbedMongoPlugin.ConfigKeys._
 import com.mongodb.{ BasicDBObject, MongoClient }
 import play.api.Play
-import play.api.test.FakeApplication
-import play.api.test.WithApplication
+import play.api.test.{ Helpers, FakeApplication, WithApplication }
+import org.specs2.execute.{ Result, AsResult }
+import scala.util.Try
 
 class ModuleSpec extends Specification {
   "The play-embed-mongo module" should {
@@ -29,7 +30,6 @@ class ModuleSpec extends Specification {
 object MongoUtils {
   def mongoPort = {
     val port = Play.current.configuration.getInt(KeyPort).get
-    println("port=" + port)
     port
   }
 
@@ -48,11 +48,16 @@ abstract class WithMongoApp(config: Pair[String, Any]*) extends WithApplication(
   lazy val client = new MongoClient("localhost", port)
   lazy val db = client.getDB("test")
   lazy val usersCollection = {
-    println(port)
     val coll = db.getCollection("users")
     val document = new BasicDBObject("firstname", "Max").append("lastname", "Mustermann")
     coll.insert(document)
     coll
+  }
+
+  override def around[T: AsResult](t: => T): Result = {
+    val result = super.around(t)
+    Try(client.close())
+    result
   }
 }
 
