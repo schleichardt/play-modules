@@ -46,15 +46,6 @@ publishMavenStyle in ThisBuild := true
 
 publishArtifact in Test in ThisBuild := false
 
-publishTo in ThisBuild <<= version {
-  (v: String) =>
-    val nexus = "https://oss.sonatype.org/"
-    if (v.trim.endsWith("SNAPSHOT"))
-      Some("snapshots" at nexus + "content/repositories/snapshots")
-    else
-      Some("releases" at nexus + "service/local/staging/deploy/maven2")
-}
-
 libraryDependencies in ThisBuild += "com.typesafe.play" %% "play" % play.core.PlayVersion.current
 
 libraryDependencies in ThisBuild += "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % "test"
@@ -102,7 +93,15 @@ val commonSettings = scalariformSettings ++ ScctPlugin.instrumentSettings ++ rel
     setNextVersion,
     commitNextVersion,
     pushChanges
-  )
+  ),
+  publishTo <<= version {
+    (v: String) =>
+      val nexus = "https://oss.sonatype.org/"
+      if (v.trim.endsWith("SNAPSHOT"))
+        Some("snapshots" at nexus + "content/repositories/snapshots")
+      else
+        Some("releases" at nexus + "service/local/staging/deploy/maven2")
+  }
 )
 
 //from https://github.com/sbt/sbt-release/issues/49
