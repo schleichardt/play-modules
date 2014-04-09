@@ -10,7 +10,7 @@ This module is a work in progress.
 
 ## Usage
 * the module is hosted on maven central
-* add `libraryDependencies += "info.schleichardt" %% "pplay-2-embed-mongo" % "0.5.0"` to your build.sbt
+* add `libraryDependencies += "info.schleichardt" %% "play-2-embed-mongo" % "0.5.0"` to your build.sbt
 * add `380:info.schleichardt.play.embed.mongo.EmbedMongoPlugin` to your conf/play.plugins file
 * your conf/application.conf file
 
