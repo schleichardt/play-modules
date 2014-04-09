@@ -89,10 +89,21 @@ pomExtra in ThisBuild := (
 val commonSettings = scalariformSettings ++ ScctPlugin.instrumentSettings ++ releaseSettings ++ Seq(
   versionFile := (baseDirectory).value / "version.sbt",
   commitMessage := commitMessage.value + " of " + name.value,
-  tagName := name .value+ "-" + tagName.value
+  tagName := name .value+ "-" + tagName.value,
+  useGlobalVersion := false,
+  releaseProcess := Seq[ReleaseStep](
+    checkSnapshotDependencies,
+    inquireVersions,
+    runTest,
+    setReleaseVersion,
+    commitReleaseVersion,
+    tagRelease,
+    publishArtifacts.copy(action = publishSignedAction),
+    setNextVersion,
+    commitNextVersion,
+    pushChanges
+  )
 )
-
-useGlobalVersion in ThisBuild := false
 
 //from https://github.com/sbt/sbt-release/issues/49
 lazy val publishSignedAction = { st: State =>
@@ -100,16 +111,3 @@ lazy val publishSignedAction = { st: State =>
   val ref = extracted.get(thisProjectRef)
   extracted.runAggregated(publishSigned in Global in ref, st)
 }
-
-releaseProcess := Seq[ReleaseStep](
-  checkSnapshotDependencies,
-  inquireVersions,
-  runTest,
-  setReleaseVersion,
-  commitReleaseVersion,
-  tagRelease,
-  publishArtifacts.copy(action = publishSignedAction),
-  setNextVersion,
-  commitNextVersion,
-  pushChanges
-)
